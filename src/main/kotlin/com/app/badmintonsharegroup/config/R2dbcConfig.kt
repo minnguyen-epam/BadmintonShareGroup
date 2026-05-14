@@ -15,12 +15,11 @@ import org.springframework.data.r2dbc.dialect.PostgresDialect
 class R2dbcConfig {
 
     @Bean
-    fun r2dbcCustomConversions(): R2dbcCustomConversions =
-        R2dbcCustomConversions.of(
-            PostgresDialect.INSTANCE,
-            RoleWritingConverter(),
-            RoleReadingConverter(),
-        )
+    fun r2dbcCustomConversions(): R2dbcCustomConversions = R2dbcCustomConversions.of(
+        PostgresDialect.INSTANCE,
+        RoleWritingConverter(),
+        RoleReadingConverter(),
+    )
 }
 
 @WritingConverter

@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git:*)",
+      "Bash(./gradlew detekt:*)",
+      "WebFetch(domain:detekt.dev)",
+      "Bash(./gradlew detektGenerateConfig --no-daemon)",
+      "Bash(grep -v \"^$\")",
+      "Bash(./gradlew detektGenerateConfig -Ddetekt.config=/tmp/detekt-default.yml --no-daemon)",
+      "Bash(./gradlew build:*)",
+      "Bash(./gradlew spotlessCheck --no-daemon)",
+      "Bash(./gradlew compileIntegrationTestKotlin --no-daemon)"
+    ]
+  }
+}

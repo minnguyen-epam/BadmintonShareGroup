@@ -10,20 +10,18 @@ import org.springframework.security.web.server.SecurityWebFilterChain
 
 @Configuration
 @EnableWebFluxSecurity
-class SecurityConfig(
-    private val jwtAuthenticationFilter: JwtAuthenticationFilter,
-) {
+class SecurityConfig(private val jwtAuthenticationFilter: JwtAuthenticationFilter) {
 
     @Bean
-    fun securityWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain =
-        http
-            .csrf { it.disable() }
-            .httpBasic { it.disable() }
-            .formLogin { it.disable() }
-            .authorizeExchange { auth ->
-                auth.pathMatchers("/api/auth/**").permitAll()
-                auth.anyExchange().authenticated()
-            }
-            .addFilterAt(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
-            .build()
+    fun securityWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain = http
+        .csrf { it.disable() }
+        .httpBasic { it.disable() }
+        .formLogin { it.disable() }
+        .authorizeExchange { auth ->
+            auth.pathMatchers("/api/auth/**").permitAll()
+            auth.pathMatchers("/actuator/health/**").permitAll()
+            auth.anyExchange().authenticated()
+        }
+        .addFilterAt(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
+        .build()
 }

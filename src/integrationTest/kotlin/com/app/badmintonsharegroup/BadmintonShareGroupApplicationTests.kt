@@ -11,5 +11,4 @@ class BadmintonShareGroupApplicationTests {
     @Test
     fun contextLoads() {
     }
-
 }

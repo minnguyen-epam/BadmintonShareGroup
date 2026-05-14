@@ -2,13 +2,13 @@ package com.app.badmintonsharegroup.security
 
 import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService
 import org.springframework.stereotype.Component
 import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.WebFilter
 import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Mono
-import org.springframework.security.core.context.ReactiveSecurityContextHolder
 
 @Component
 class JwtAuthenticationFilter(
@@ -34,7 +34,9 @@ class JwtAuthenticationFilter(
         return userDetailsService.findByUsername(username)
             .flatMap { userDetails ->
                 val authentication = UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.authorities
+                    userDetails,
+                    null,
+                    userDetails.authorities,
                 )
                 chain.filter(exchange)
                     .contextWrite(ReactiveSecurityContextHolder.withAuthentication(authentication))

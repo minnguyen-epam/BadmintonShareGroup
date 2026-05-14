@@ -16,9 +16,7 @@ import reactor.core.publisher.Mono
 
 @RestController
 @RequestMapping("/api/auth")
-class UserAccountController(
-    private val userAccountService: UserAccountService,
-) {
+class UserAccountController(private val userAccountService: UserAccountService) {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
@@ -26,6 +24,5 @@ class UserAccountController(
         userAccountService.register(request)
 
     @PostMapping("/login")
-    fun login(@Valid @RequestBody request: LoginRequest): Mono<AuthResponse> =
-        userAccountService.login(request)
+    fun login(@Valid @RequestBody request: LoginRequest): Mono<AuthResponse> = userAccountService.login(request)
 }

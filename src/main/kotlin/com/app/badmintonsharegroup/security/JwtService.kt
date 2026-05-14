@@ -15,13 +15,12 @@ class JwtService(private val jwtProperties: JwtProperties) {
         Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.secret))
     }
 
-    fun generateToken(username: String): String =
-        Jwts.builder()
-            .subject(username)
-            .issuedAt(Date())
-            .expiration(Date(System.currentTimeMillis() + jwtProperties.expirationMs))
-            .signWith(secretKey)
-            .compact()
+    fun generateToken(username: String): String = Jwts.builder()
+        .subject(username)
+        .issuedAt(Date())
+        .expiration(Date(System.currentTimeMillis() + jwtProperties.expirationMs))
+        .signWith(secretKey)
+        .compact()
 
     fun extractUsername(token: String): String? = runCatching {
         Jwts.parser()

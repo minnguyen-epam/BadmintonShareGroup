@@ -26,27 +26,30 @@ class UserAccountService(
     private val jwtService: JwtService,
 ) : ReactiveUserDetailsService {
 
-    override fun findByUsername(username: String): Mono<UserDetails> =
-        userAccountRepository.findByUsername(username)
-            .map { account ->
-                User.builder()
-                    .username(account.username)
-                    .password(account.password)
-                    .authorities(SimpleGrantedAuthority("ROLE_USER"))
-                    .build()
-            }
-            .switchIfEmpty(Mono.error(ResponseStatusException(HttpStatus.NOT_FOUND, "User not found: $username")))
+    override fun findByUsername(username: String): Mono<UserDetails> = userAccountRepository.findByUsername(username)
+        .map { account ->
+            User.builder()
+                .username(account.username)
+                .password(account.password)
+                .authorities(SimpleGrantedAuthority("ROLE_USER"))
+                .build()
+        }
+        .switchIfEmpty(Mono.error(ResponseStatusException(HttpStatus.NOT_FOUND, "User not found: $username")))
 
     @Transactional
     fun register(request: CreateUserAccountRequest): Mono<UserAccountResponse> =
         userAccountRepository.existsByUsername(request.username)
             .flatMap { usernameExists ->
-                if (usernameExists) Mono.error(ResponseStatusException(HttpStatus.CONFLICT, "Username already taken"))
-                else userAccountRepository.existsByEmail(request.email)
+                if (usernameExists) {
+                    Mono.error(ResponseStatusException(HttpStatus.CONFLICT, "Username already taken"))
+                } else {
+                    userAccountRepository.existsByEmail(request.email)
+                }
             }
             .flatMap { emailExists ->
-                if (emailExists) Mono.error(ResponseStatusException(HttpStatus.CONFLICT, "Email already registered"))
-                else {
+                if (emailExists) {
+                    Mono.error(ResponseStatusException(HttpStatus.CONFLICT, "Email already registered"))
+                } else {
                     val model = userAccountMapper.toModel(request)
                         .copy(password = passwordEncoder.encode(request.password)!!)
                     userAccountRepository.save(userAccountMapper.toEntity(model))
@@ -55,15 +58,14 @@ class UserAccountService(
             .map { userAccountMapper.toResponse(userAccountMapper.toModel(it)) }
 
     @Transactional
-    fun login(request: LoginRequest): Mono<AuthResponse> =
-        userAccountRepository.findByUsername(request.username)
-            .switchIfEmpty(Mono.error(ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials")))
-            .flatMap { account ->
-                if (!passwordEncoder.matches(request.password, account.password)) {
-                    Mono.error(ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials"))
-                } else {
-                    val token = jwtService.generateToken(account.username)
-                    Mono.just(AuthResponse(token = token, userId = account.id, username = account.username))
-                }
+    fun login(request: LoginRequest): Mono<AuthResponse> = userAccountRepository.findByUsername(request.username)
+        .switchIfEmpty(Mono.error(ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials")))
+        .flatMap { account ->
+            if (!passwordEncoder.matches(request.password, account.password)) {
+                Mono.error(ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials"))
+            } else {
+                val token = jwtService.generateToken(account.username)
+                Mono.just(AuthResponse(token = token, userId = account.id, username = account.username))
             }
+        }
 }

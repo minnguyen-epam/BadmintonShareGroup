@@ -1,0 +1,17 @@
+complexity:
+  LongMethod:
+    allowedLines: 30
+  CyclomaticComplexMethod:
+    allowedComplexity: 15
+
+naming:
+  MatchingDeclarationName:
+    active: false
+
+style:
+  MaxLineLength:
+    maxLineLength: 120
+  WildcardImport:
+    active: false
+  ReturnCount:
+    max: 4

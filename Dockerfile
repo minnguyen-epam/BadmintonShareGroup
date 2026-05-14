@@ -1,5 +1,4 @@
 # Stage 1: Build
-# Pull eclipse-temurin:24-jdk-alpine as the build environment
 FROM eclipse-temurin:24-jdk-alpine AS builder
 WORKDIR /app
 
@@ -11,21 +10,24 @@ COPY build.gradle.kts settings.gradle.kts ./
 # Download dependencies (cached layer)
 RUN ./gradlew dependencies --no-daemon || true
 
-# copy your source code, then compile + build the fat JAR
+# Copy source code, then compile + build the fat JAR
 COPY src/ src/
 RUN ./gradlew bootJar --no-daemon -x test
 
 # Stage 2: Runtime
-# start a NEW smaller image (no compiler, just JRE)
 FROM eclipse-temurin:24-jre-alpine
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 WORKDIR /app
 
-# Copy ONLY the JAR from the builder stage above
+# Copy ONLY the JAR from the builder stage
 COPY --from=builder /app/build/libs/*.jar app.jar
 
-#It does not actually open the port, but it serves as documentation for users of the image
+# Switch to non-root user
+USER appuser
+
 EXPOSE 8080
-#The command that runs when the container starts. Equivalent to typing this in the terminal:
- #
- #  java -jar app.jar
+
+HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
+  CMD wget -qO- http://localhost:8080/actuator/health || exit 1
+
 ENTRYPOINT ["java", "-jar", "app.jar"]

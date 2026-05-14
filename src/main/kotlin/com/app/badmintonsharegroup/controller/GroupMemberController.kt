@@ -12,14 +12,11 @@ import reactor.core.publisher.Mono
 
 @RestController
 @RequestMapping("/api/group-members")
-class GroupMemberController(
-    private val groupMemberService: GroupMemberService
-) {
+class GroupMemberController(private val groupMemberService: GroupMemberService) {
     @GetMapping
     fun getAllGroupMembers(): Flux<GroupMemberModel> = groupMemberService.getAllGroupMembers()
 
     @PostMapping
-    fun createGroupMember(request: CreateGroupMemberRequest): Mono<GroupMemberModel> {
-        return groupMemberService.createGroupMember(request)
-    }
+    fun createGroupMember(request: CreateGroupMemberRequest): Mono<GroupMemberModel> =
+        groupMemberService.createGroupMember(request)
 }

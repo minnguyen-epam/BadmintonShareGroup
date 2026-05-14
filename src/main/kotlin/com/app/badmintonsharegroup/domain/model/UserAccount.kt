@@ -1,6 +1,5 @@
 package com.app.badmintonsharegroup.domain.model
 
-import java.time.Instant
 import java.util.UUID
 
 data class UserAccountModel(

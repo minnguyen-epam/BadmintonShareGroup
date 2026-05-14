@@ -1,6 +1,5 @@
 package com.app.badmintonsharegroup.dto.response
 
-import java.time.Instant
 import java.util.UUID
 
 data class GroupMemberResponse(

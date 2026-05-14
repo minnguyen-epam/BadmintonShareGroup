@@ -43,9 +43,4 @@ data class LoginRequest(
     val password: String,
 )
 
-data class AuthResponse(
-    val token: String,
-    val tokenType: String = "Bearer",
-    val userId: UUID?,
-    val username: String,
-)
+data class AuthResponse(val token: String, val tokenType: String = "Bearer", val userId: UUID?, val username: String)
